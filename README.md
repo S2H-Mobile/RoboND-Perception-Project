@@ -1,2 +1,2 @@
 # RoboND-Perception-Project
-A solution of the Perception Project for the Udacity Robotics Nanodegree.
+This is my solution of the [Perception Project](https://github.com/udacity/RoboND-Perception-Project) for the Udacity Robotics Nanodegree.
