@@ -55,7 +55,7 @@ def pcl_callback(pcl_msg):
     outlier_filter = cloud.make_statistical_outlier_filter()
 
     # Set the number of neighboring points to analyze for any given point
-    outlier_filter.set_mean_k(50)
+    outlier_filter.set_mean_k(8)
 
     # Any point with a mean distance larger than global
     # (mean distance+x*std_dev) will be considered outlier
@@ -75,18 +75,20 @@ def pcl_callback(pcl_msg):
     # Call the filter function to obtain the resultant downsampled point cloud
     cloud_filtered = vox.filter()
 
-    # PassThrough filter
+    # PassThrough filter 0.6 < z < 1.1
     passthrough = cloud_filtered.make_passthrough_filter()
-
-    # Assign axis and range to the passthrough filter object.
     filter_axis = 'z'
-    passthrough.set_filter_field_name (filter_axis)
+    passthrough.set_filter_field_name(filter_axis)
     axis_min = 0.6
     axis_max = 1.1
-    passthrough.set_filter_limits (axis_min, axis_max)
-
-    # Finally use the filter function to obtain the resultant point cloud.
+    passthrough.set_filter_limits(axis_min, axis_max)
     cloud_filtered = passthrough.filter()
+
+    # PassThrough filter 0.34 < x < 1.0
+    px = cloud_filtered.make_passthrough_filter()
+    px.set_filter_field_name('x')
+    px.set_filter_limits(0.34, 1.0)
+    cloud_filtered = px.filter()
 
     # RANSAC plane segmentation
     seg = cloud_filtered.make_segmenter()
