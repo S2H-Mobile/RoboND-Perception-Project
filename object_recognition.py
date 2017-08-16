@@ -196,21 +196,25 @@ def pcl_callback(pcl_msg):
     else:
         rospy.loginfo("No objects detected.")
 
-# function to load parameters and request PickPlace service
-def pr2_mover(detected_objects):
 
-    # Initialize pick list parameter
+def pr2_mover(detected_objects):
+    """ Connect to ROS service for pick and place routine.
+        Create request parameters as ROS messages.
+        Save request parameters as yaml files.
+    """
+
+    # Initialize object list
     objects = rospy.get_param('/object_list')
 
-    # Check for consistency
+    # Check consistency of detected objects list
     if not len(detected_objects) == len(objects):
         rospy.logerror("List of detected objects does not match pick list.")
         return
 
-    # Initialize number of objects in the list
+    # Assign number of objects
     num_objects = len(objects)
 
-    # Initialize scene number
+    # Initialize test scene number
     num_scene = 2
 
     # Initialize message for test scene number
@@ -219,16 +223,15 @@ def pr2_mover(detected_objects):
 
     # TODO: Rotate PR2 in place to capture side tables for the collision map
 
-
-    # Initialize drop box position parameter
+    # Initialize dropbox positions from ROS parameter
     dropbox = rospy.get_param('/dropbox')
     red_dropbox_position = dropbox[0]['position']
     green_dropbox_position = dropbox[1]['position']
 
-    # Evaluate if object detections are robust
-    # assuming both lists ahve the same sort order
-    #For each item in the list, you'll need to compare the label with the pick list and provide the centroid. 
-    #You can grab the labels, access the (x, y, z) coordinates of each point and compute the centroid like this:
+    # For each item in the list, compare the predicted label with the
+    # ground truth from the pick list.
+    # Calculate the centroid. 
+    # Evaluate the accuracy of the predictions.
     hit_count = 0
     centroids = []
     for i in range(num_objects):
@@ -238,11 +241,13 @@ def pr2_mover(detected_objects):
         predicted_label = do.label
         true_label = objects[i]['name']
 
-        # Evaluate the label prediction
+        # Print comparison of predicted vs true label
         rospy.loginfo('{} / {}'.format(predicted_label, true_label))
 
         # compare prediction with ground truth
         if predicted_label == true_label:
+
+            # count successful prediction
             hit_count += 1
 
             # calculate the centroid
@@ -255,45 +260,42 @@ def pr2_mover(detected_objects):
             do.label = 'error'
             centroids.append(np.array([0, 0, 0]))
 
+    # Evaluate the accuracy
     rospy.loginfo('Accuracy is {} / {}.'.format(hit_count, num_objects))
 
     # Initialize list of request parameters for later output to yaml format
     request_params = []
 
-    # iterate over detected objects
+    # Iterate over detected objects to generate ROS message for each object
     for j in range(num_objects):
 
-        # create request only for successful predictions
+        # Create request message only for successful predictions
         if not detected_objects[j].label == 'error':
-            # ROS messages expect native Python data types but having computed centroids as above your list centroids will be of type numpy.float64.
+
+            # Convert numpy.float64 to native Python data types as expected by ROS
             np_centroid = centroids[j]
             scalar_centroid = [np.asscalar(element) for element in np_centroid]
 
-            # Initialize true object group
+            # Initialize ground truth object group
             object_group = objects[j]['group']
 
-            # Initialize object name variable
+            # Create 'object_name' message with ground truth label
             object_name = String()
-
-            # Populate the data field with true label and group
             object_name.data = objects[j]['name']
 
-            # Initialize arm_name variable
+            # Create 'arm_name' message 
             arm_name = String()
 
-            # Assign the robot arm to be used
-            # Since the green box is located on the right side of the robot,
-            # select the right arm for objects with green group and left arm
-            # for objects with red group.
+            # Select right arm for green group and left arm for red group
             arm_name.data = 'right' if object_group == 'green' else 'left'
 
-            # Create the pick_pose message with the centroid as the position data
+            # Create 'pick_pose' message with centroid as the position data
             pick_pose = Pose()
             pick_pose.position.x = scalar_centroid[0]
             pick_pose.position.y = scalar_centroid[1]
             pick_pose.position.z = scalar_centroid[2]
 
-            # Create the place_pose message with the dropbox center as position data
+            # Create 'place_pose' message with dropbox center as position data
             place_pose = Pose()
             dropbox_position = green_dropbox_position if object_group == 'green' else red_dropbox_position
             place_pose.position.x = dropbox_position[0]
@@ -306,7 +308,7 @@ def pr2_mover(detected_objects):
             # Wait for 'pick_place_routine' service to come up
             rospy.wait_for_service('pick_place_routine')
 
-            # Call the 'pick_place_routine' service
+            # Call 'pick_place_routine' service
             try:
                 pick_place_routine = rospy.ServiceProxy('pick_place_routine', PickPlace)
                 resp = pick_place_routine(test_scene_num, object_name, arm_name, pick_pose, place_pose)
@@ -314,7 +316,7 @@ def pr2_mover(detected_objects):
             except rospy.ServiceException, e:
                 print "Service call failed: %s"%e
 
-    # Output request parameters into output yaml file
+    # Write request parameters to output yaml file
     file_name = "output_{}.yaml".format(num_scene)
     send_to_yaml(file_name, request_params)
 
@@ -324,16 +326,17 @@ if __name__ == '__main__':
     # ROS node initialization
     rospy.init_node('object_detection', anonymous=True)
 
-    # Create Subscribers
+    # Create subscribers
     pcl_sub = rospy.Subscriber("/pr2/world/points", pc2.PointCloud2, pcl_callback, queue_size=1)
 
-    # Create Publishers
+    # Create publishers
     pcl_objects_pub = rospy.Publisher("/pcl_objects", PointCloud2, queue_size=1)
     pcl_table_pub = rospy.Publisher("/pcl_table", PointCloud2, queue_size=1)
     pcl_cluster_pub = rospy.Publisher("/pcl_cluster", PointCloud2, queue_size=1)
     object_markers_pub = rospy.Publisher("/object_markers", Marker, queue_size=1)
     detected_objects_pub = rospy.Publisher("/detected_objects", DetectedObjectsArray, queue_size=1)
-    # Load Model From disk
+
+    # Load model from disk
     model = pickle.load(open('model.sav', 'rb'))
     clf = model['classifier']
     encoder = LabelEncoder()
