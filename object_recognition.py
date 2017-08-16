@@ -215,7 +215,7 @@ def pr2_mover(detected_objects):
     num_objects = len(objects)
 
     # Initialize test scene number
-    num_scene = 2
+    num_scene = rospy.get_param('/test_scene_num')
 
     # Initialize message for test scene number
     test_scene_num = Int32()
