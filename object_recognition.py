@@ -208,7 +208,7 @@ def pr2_mover(detected_objects):
 
     # Check consistency of detected objects list
     if not len(detected_objects) == len(objects):
-        rospy.logerror("List of detected objects does not match pick list.")
+        rospy.loginfo("List of detected objects does not match pick list.")
         return
 
     # Assign number of objects
