@@ -67,7 +67,7 @@ def pcl_callback(pcl_msg):
     vox = cloud.make_voxel_grid_filter()
 
     # Define leaf size
-    LEAF_SIZE = 0.01
+    LEAF_SIZE = 0.005
 
     # Set the voxel (or leaf) size
     vox.set_leaf_size(LEAF_SIZE, LEAF_SIZE, LEAF_SIZE)
@@ -116,11 +116,9 @@ def pcl_callback(pcl_msg):
     ec = white_cloud.make_EuclideanClusterExtraction()
     # Set tolerances for distance threshold 
     # as well as minimum and maximum cluster size (in points)
-    # NOTE: These are poor choices of clustering parameters
-    # Your task is to experiment and find values that work for segmenting objects.
-    ec.set_ClusterTolerance(0.04)
-    ec.set_MinClusterSize(20)
-    ec.set_MaxClusterSize(1800)
+    ec.set_ClusterTolerance(0.02)
+    ec.set_MinClusterSize(40)
+    ec.set_MaxClusterSize(4000)
     # Search the k-d tree for clusters
     ec.set_SearchMethod(tree)
     # Extract indices for each of the discovered clusters
