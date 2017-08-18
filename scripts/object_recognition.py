@@ -226,36 +226,39 @@ def pr2_mover(detected_objects):
     red_dropbox_position = dropbox[0]['position']
     green_dropbox_position = dropbox[1]['position']
 
-    # For each item in the list, compare the predicted label with the
-    # ground truth from the pick list.
-    # Calculate the centroid. 
-    # Evaluate the accuracy of the predictions.
+    # Initialize counter for evaluating the accuracy of the prediction
     hit_count = 0
+
+    # Initialize centroids list 
     centroids = []
-    for i in range(num_objects):
-        do = detected_objects[i]
 
-        # Initialize predicted and true labels
-        predicted_label = do.label
-        true_label = objects[i]['name']
+    # Create list of ground truth labels
+    true_labels = [element['name'] for element in objects]
 
-        # Print comparison of predicted vs true label
-        rospy.loginfo('{} / {}'.format(predicted_label, true_label))
+    # For each detected object, compare the predicted label with the
+    # ground truth from the pick list.
+    for detected_object in detected_objects:
+
+        # Initialize predicted label
+        predicted_label = detected_object.label
 
         # compare prediction with ground truth
-        if predicted_label == true_label:
+        if predicted_label in true_labels:
+
+            # remove detected label from ground truth
+            true_labels.remove(predicted_label)
 
             # count successful prediction
             hit_count += 1
 
             # calculate the centroid
-            pts = ros_to_pcl(do.cloud).to_array()
+            pts = ros_to_pcl(detected_object.cloud).to_array()
             centroid = np.mean(pts, axis=0)[:3]
             centroids.append(centroid)
         else:
 
             # mark unsuccessful detection
-            do.label = 'error'
+            detected_object.label = 'error'
             centroids.append(np.array([0, 0, 0]))
 
     # Evaluate the accuracy
