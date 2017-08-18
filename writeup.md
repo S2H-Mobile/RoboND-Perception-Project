@@ -1,5 +1,11 @@
 # Project: Perception Pick & Place
 
+[//]: # (Image References)
+
+[screenshot_world_1]: ./world_1_object_recognition.png
+[screenshot_world_2]: ./world_2_object_recognition.png
+[screenshot_world_3]: ./world_3_object_recognition.png
+
 ## Required Steps for a Passing Submission:
 1. Extract features and train an SVM model on new objects (see `pick_list_*.yaml` in `/pr2_robot/config/` for the list of models you'll be trying to identify). 
 2. Write a ROS node and subscribe to `/pr2/world/points` topic. This topic contains noisy point cloud data that you must work with.
@@ -72,15 +78,15 @@ In the final configuration, the [perception pipeline](https://github.com/S2H-Mob
 
 #### Scene 1
 See the file output_1.yaml and the screenshot below.
-![Recognized objects for scene 1.](world_1_object_recognition.png)
+![Recognized objects for scene 1.][screenshot_world_1]
 
 #### Scene 2
 See the file output_2.yaml and the screenshot below.
-![Recognized objects for scene 2.](world_2_object_recognition.png)
+![Recognized objects for scene 2.][screenshot_world_2]
 
 #### Scene 3
 See the file output_3.yaml and the screenshot below.
-![Recognized objects for scene 3.](world_3_object_recognition.png)
+![Recognized objects for scene 3.][screenshot_world_3]
 
 #### Improvements
 Since the performance of the perception depends on a number of parameters, the main improvements can be made by tuning those parameters.
