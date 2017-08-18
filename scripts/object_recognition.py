@@ -229,9 +229,6 @@ def pr2_mover(detected_objects):
     # Initialize counter for evaluating the accuracy of the prediction
     hit_count = 0
 
-    # Initialize centroids list 
-    centroids = []
-
     # Create list of ground truth labels
     true_labels = [element['name'] for element in objects]
 
@@ -250,45 +247,81 @@ def pr2_mover(detected_objects):
 
             # count successful prediction
             hit_count += 1
-
-            # calculate the centroid
-            pts = ros_to_pcl(detected_object.cloud).to_array()
-            centroid = np.mean(pts, axis=0)[:3]
-            centroids.append(centroid)
         else:
 
             # mark unsuccessful detection
             detected_object.label = 'error'
-            centroids.append(np.array([0, 0, 0]))
 
     # Evaluate the accuracy
-    rospy.loginfo('Accuracy is {} / {}.'.format(hit_count, num_objects))
+    rospy.loginfo('Detected {} objects out of {}.'.format(hit_count, num_objects))
+
+    # Create list of detected objects sorted in the order of the pick list
+    sorted_objects = []
+
+    # Iterate over the pick list
+    for i in range(num_objects):
+
+        # Grab the label of the pick list item
+        pl_item_label = objects[i]['name']
+
+        # Find detected object corresponding to pick list item
+        for detected_object in detected_objects:
+            if detected_object.label == pl_item_label:
+
+                 # Append detected object to sorted_objects list
+                sorted_objects.append(detected_object)
+
+                # Remove current object
+                detected_objects.remove(detected_object)
+                break
+
+    # Create centroids list 
+    centroids = []
+    for sorted_object in sorted_objects:
+
+        # Calculate the centroid
+        pts = ros_to_pcl(sorted_object.cloud).to_array()
+        centroid = np.mean(pts, axis=0)[:3]
+
+        # Append centroid as <numpy.float64> data type
+        centroids.append(centroid)
+
+    # Create dropbox group list
+    dropbox_groups = []
+    for sorted_object in sorted_objects:
+
+        # Iterate over pick list to find the matching object
+        for pl_item in objects:
+
+            # Compare objects by their label
+            if pl_item['name'] == sorted_object.label:
+
+                # Matching object found, add the group to the list
+                dropbox_groups.append(pl_item['group'])
+                break
 
     # Initialize list of request parameters for later output to yaml format
     request_params = []
 
     # Iterate over detected objects to generate ROS message for each object
-    for j in range(num_objects):
+    for j in range(len(sorted_objects)):
 
-        # Create request message only for successful predictions
-        if not detected_objects[j].label == 'error':
-
-            # Convert numpy.float64 to native Python data types as expected by ROS
-            np_centroid = centroids[j]
-            scalar_centroid = [np.asscalar(element) for element in np_centroid]
-
-            # Initialize ground truth object group
-            object_group = objects[j]['group']
-
-            # Create 'object_name' message with ground truth label
+            # Create 'object_name' message with label as native string type
             object_name = String()
-            object_name.data = objects[j]['name']
+            object_name.data = str(sorted_objects[j].label)
+
+            # Initialize the dropbox group
+            object_group = dropbox_groups[j]
 
             # Create 'arm_name' message 
             arm_name = String()
 
             # Select right arm for green group and left arm for red group
             arm_name.data = 'right' if object_group == 'green' else 'left'
+
+            # Convert <numpy.float64> data type to native float as expected by ROS
+            np_centroid = centroids[j]
+            scalar_centroid = [np.asscalar(element) for element in np_centroid]
 
             # Create 'pick_pose' message with centroid as the position data
             pick_pose = Pose()
