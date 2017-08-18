@@ -76,6 +76,6 @@ if __name__ == '__main__':
         delete_model()
 
     # Save the captured features to a file
-    file_name = "training_set_{}.sav".format(num_poses)
+    file_name = "training_set.sav"
     pickle.dump(labeled_features, open(file_name, 'wb'))
 
