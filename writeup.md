@@ -2,9 +2,9 @@
 
 [//]: # (Image References)
 
-[screenshot_world_1]: ./world_1_object_recognition.png
-[screenshot_world_2]: ./world_2_object_recognition.png
-[screenshot_world_3]: ./world_3_object_recognition.png
+[screenshot_world_1]: ./world_1_object_recognition.PNG
+[screenshot_world_2]: ./world_2_object_recognition.PNG
+[screenshot_world_3]: ./world_3_object_recognition.PNG
 
 ## Required Steps for a Passing Submission:
 1. Extract features and train an SVM model on new objects (see `pick_list_*.yaml` in `/pr2_robot/config/` for the list of models you'll be trying to identify). 
