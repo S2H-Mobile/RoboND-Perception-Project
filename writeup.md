@@ -58,12 +58,12 @@ in order to optimize the performance of the SVM classifier.
 
 For example, the table below shows data for several capture cycles where 8 poses where taken with varying bin sizes and color spaces for the color histograms.
  
-color space / bin size | 32    | 64   | 128
----                    | ---   | ---  | ---
-RGB                    | 0.625 | -    | -
-HSV                    | 0.906 | -    | -
+color space / bin size | 32    | 64    | 128
+---                    | ---   | ---   | ---
+RGB                    | 0.625 | 0.797 | 0.641
+HSV                    | 0.906 | 0.984 | 0.922
 
-The accuracy scores for RGB color space were higher than for HSV color space for 32 and 64 bins. The accuracy decreased with increasing bin size.
+The accuracy scores for HSV color space are consistently higher than for HSV color space across all bin sizes. A bin size of 64 gives the highest accuracy score, followed by bin sizes 128 and 32. Later on it turned out that the derived model for bin size 32 and HSV color space performed best on the test scenarios, so I used these values.
 
 For the number of poses per object, I tried the values 8, 10, 40, 100. For 10 and 40 the models seemed to overfit since the cross-validation score improved but the real world accuracy decreased.
 
