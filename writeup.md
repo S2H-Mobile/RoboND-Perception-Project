@@ -22,72 +22,71 @@
 
 # [Rubric](https://review.udacity.com/#!/rubrics/1067/view) Points
 
-## Workflow
-1. Train a classification model using features like color histograms and surface normals.
-2. Adjust the parameters of the object recognition pipeline.
-3. Run the inception and generate YAML files.
-4. Optionally, perform the pick and place operation with the PR2 robot arm.
-
-### Capturing Features and Training
-- Set up the training environment with ``roslaunch sensor_stick training.launch``.
-- The features are defined by the functions ``compute_color_histograms()`` and ``compute_normal_histograms()`` in ``/sensor_stick/src/sensor_stick/features.py``.
-- For each world, generate a training set of features for the objects in your pick list (see ``/pr2_robot/config/pick_list_*.yaml``). Each pick list corresponds to a world and thus indicates what items will be present in that scenario. To generate the training sets, you will have to modify the models list in the ``capture_features.py`` script with items from ``pick_list_*.yaml``, for example
-```
-    models = [\
-     'beer',
-     'bowl',
-     'create',
-     'disk_part',
-     'hammer',
-     'plastic_cup',
-     'soda_can']
-```
-- Run the feature capturing script with ``rosrun sensor_stick capture_features.py``. When it finishes running you should have a ``training_set_*.sav`` file.
-- Run the training script with ``rosrun sensor_stick train_svm.py``. When it finishes running you should have a ``model_*.sav`` file.
-
-### Pipeline Parameter Tuning
-- Add your object recognition code to your perception pipeline.
-Test with the actual project scene to see if your recognition code is successful.
-- Modify the file ``/pr2_robot/launch/pick_place_project.launch`` to select the world to spawn:
-```
- <!--Launch a gazebo world-->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <!--TODO:Change the world name to load different tabletop setup-->
-    <arg name="world_name" value="$(find pr2_robot)/worlds/test1.world"/>
-  </include>
-```
-- Launch the RViz environment with ``roslaunch pr2_robot pick_place_project.launch``.
-- Run the script to test the parameters ``rosrun pr2_robot object_recognition.py``.
-
-### Exercise 1, 2 and 3 pipeline implemented
+### Exercise 1, 2 and 3 Pipeline
 #### 1. Complete Exercise 1 steps. Pipeline for filtering and RANSAC plane fitting implemented.
 
 #### 2. Complete Exercise 2 steps: Pipeline including clustering for segmentation implemented.  
 
-#### 2. Complete Exercise 3 Steps.  Features extracted and SVM trained.  Object recognition implemented.
-Here is an example of how to include an image in your writeup.
+#### 3. Complete Exercise 3 Steps. Features extracted and SVM trained. Object recognition implemented.
+To generate the training sets, I modified the objects list in the ``capture_features.py`` script with the items from ``pick_list_3.yaml``, which contains all object models:
+```
+    models = [\
+       'biscuits',
+       'soap',
+       'soap2',
+       'book',
+       'glue',
+       'sticky_notes',
+       'snacks',
+       'eraser']
+```
 
-![demo-1](https://user-images.githubusercontent.com/20687560/28748231-46b5b912-7467-11e7-8778-3095172b7b19.png)
+For engineering the features I assumed (following the lectures) that an object is characterized by the following properties:
+- the distribution of color channels,
+- the distribution of surface normals.
+To extract characteristic features from these data distributions I organized them in histograms and tuned the following parameters
+- number of poses per object,
+- usage of either RGB or HSV color space,
+- number of bins in a histogram,
+in order to optimize the performance of the SVM classifier.
 
+For example, the table below shows data for several capture cycles where 8 poses where taken with varying bin sizes and color spaces for the color histograms.
+ 
+color space / bin size | 32    | 64   | 128
+---                    | ---   | ---  | ---
+RGB                    | 0.625 | -    | -
+HSV                    | 0.906 | -    | -
 
+The accuracy scores for RGB color space were higher than for HSV color space for 32 and 64 bins. The accuracy decreased with increasing bin size.
 
+For the number of poses per object, I tried the values 8, 10, 40, 100. For 10 and 40 the models seemed to overfit since the cross-validation score improved but the real world accuracy decreased.
 
-Here's | A | Snappy | Table
---- | --- | --- | ---
-1 | `highlight` | **bold** | 7.41
-2 | a | b | c
-3 | *italic* | text | 403
-4 | 2 | 3 | abcd
-
+Finally I trained a model with 100 poses per object. The histograms have 32 bins per channel. The color histograms are in  HSV space with range (0, 256) and the surface normal histograms have a range of (-1, 1). This model reached an accuracy score of 0.99 in cross-validation and successfully detected all objects in the test scenes 1, 2 and 3.
 
 ### Pick and Place Setup
 
 #### 1. For all three tabletop setups (`test*.world`), perform object recognition, then read in respective pick list (`pick_list_*.yaml`). Next construct the messages that would comprise a valid `PickPlace` request output them to `.yaml` format.
 
-And here's another image! 
-![demo-2](https://user-images.githubusercontent.com/20687560/28748286-9f65680e-7468-11e7-83dc-f1a32380b89c.png)
+### Results
+In the final configuration, the [perception pipeline](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/object_recognition.py) recognized all objects in all the test scenes. The screenshots below show clippings of the RViz window subscribed to the ``/pcl_objects`` publisher. The objects in the scene are labeled with the predicted label.
 
-Spend some time at the end to discuss your code, what techniques you used, what worked and why, where the implementation might fail and how you might improve it if you were going to pursue this project further.  
+#### Scene 1
+See the file output_1.yaml and the screenshot below.
+![Recognized objects for scene 1.](world_1_object_recognition.png)
 
+#### Scene 2
+See the file output_2.yaml and the screenshot below.
+![Recognized objects for scene 2.](world_2_object_recognition.png)
+
+#### Scene 3
+See the file output_3.yaml and the screenshot below.
+![Recognized objects for scene 3.](world_3_object_recognition.png)
+
+#### Improvements
+Since the performance of the perception depends on a number of parameters, the main improvements can be made by tuning those parameters.
+
+- The parameters of the image pipeline need to be adjusted to the hardware in use and the application (for example adapt to changing region of interest and object distribution in the scene).
+- The selection and quality of the features used to train the SVM.
+- The machine learning model. Which kernel type fits best to the features, linear or RBF. 
 
 
