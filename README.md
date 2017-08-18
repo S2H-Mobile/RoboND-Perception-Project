@@ -14,7 +14,9 @@ The challenge is a catkin ROS simulation environment where a PR2 robot must use 
 
 ## Workflow
 1. Train a classification model using features like color histograms and surface normals.
-2. Run the object recognition pipeline and generate YAML files containing ROS messages.
+2. Adjust the parameters of the object recognition pipeline.
+3. Run the pipeline for the test scenes and generate YAML files containing ROS message ROS messages for the ``pick_place_routine`` service.
+4. Optionally, perform the pick and place operation with the PR2 robot arm.
 
 ### Capture Features and Train Model
 - Set up the training environment with ``roslaunch sensor_stick training.launch``.
