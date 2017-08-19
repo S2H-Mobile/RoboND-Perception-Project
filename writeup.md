@@ -5,6 +5,7 @@
 [screenshot_world_1]: ./world_1_object_recognition.PNG
 [screenshot_world_2]: ./world_2_object_recognition.PNG
 [screenshot_world_3]: ./world_3_object_recognition.PNG
+[normalized_confusion_matrix]: ./normalized_confusion_matrix.PNG
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/1067/view) Points
 
@@ -14,7 +15,7 @@
 #### 2. Complete Exercise 2 steps: Pipeline including clustering for segmentation implemented.  
 
 #### 3. Complete Exercise 3 Steps. Features extracted and SVM trained. Object recognition implemented.
-To generate the training sets, I modified the objects list in the ``capture_features.py`` script with the items from ``pick_list_3.yaml``, which contains all object models:
+To generate the training sets, I added the items from ``pick_list_3.yaml``, which contains all object models, to the [capture_features.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/capture_features.py) script:
 ```
     models = [\
        'biscuits',
@@ -30,6 +31,7 @@ To generate the training sets, I modified the objects list in the ``capture_feat
 For engineering the features I assumed (following the lectures) that an object is characterized by the following properties:
 - the distribution of color channels,
 - the distribution of surface normals.
+
 To extract characteristic features from these data distributions I organized them in histograms and tuned the following parameters
 - number of poses per object,
 - usage of either RGB or HSV color space,
@@ -43,11 +45,13 @@ color space / bin size | 32    | 64    | 128
 RGB                    | 0.625 | 0.797 | 0.641
 HSV                    | 0.906 | 0.984 | 0.922
 
-The accuracy scores for HSV color space are consistently higher than for HSV color space across all bin sizes. A bin size of 64 gives the highest accuracy score, followed by bin sizes 128 and 32. Later on it turned out that the derived model for bin size 32 and HSV color space performed best on the test scenarios, so I used these values.
+The accuracy scores for HSV color space are consistently higher than for RGB color space across all bin sizes. A bin size of 64 gives the highest accuracy score, followed by bin sizes 128 and 32. Later on it turned out that the derived model for bin size 32 and HSV color space performed best on the test scenarios, so I used these values.
 
 For the number of poses per object, I tried the values 8, 10, 40, 100. For 10 and 40 the models seemed to overfit since the cross-validation score improved but the real world accuracy decreased.
 
-Finally I trained a model with 100 poses per object. The histograms have 32 bins per channel. The color histograms are in  HSV space with range (0, 256) and the surface normal histograms have a range of (-1, 1). This model reached an accuracy score of 0.99 in cross-validation and successfully detected all objects in the test scenes 1, 2 and 3.
+Finally I trained a model with 100 poses per object. The histograms have 32 bins per channel. The color histograms are in  HSV space with range (0, 256) and the surface normal histograms have a range of (-1, 1). This model reached an accuracy score of 0.99 in cross-validation and later on successfully detected all objects in the test scenes 1, 2 and 3. The following figure shows the normalized confusion matrix produced by the ``train_svm.py`` script.
+
+![Normalized confusion matrix for training the model.][normalized_confusion_matrix]
 
 ### Pick and Place Setup
 
