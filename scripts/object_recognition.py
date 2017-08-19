@@ -45,8 +45,19 @@ def send_to_yaml(yaml_filename, dict_list):
     with open(yaml_filename, 'w') as outfile:
         yaml.dump(data_dict, outfile, default_flow_style=False)
 
-# Callback function for your Point Cloud Subscriber
+
 def pcl_callback(pcl_msg):
+    """ROS callback function for the Point Cloud Subscriber. Takes a point cloud and
+       performs object recognition on it. The pipeline is documented in the writeup.
+
+       Publishes point clouds containing recognized objects and clustered objects.
+
+       Uses machine learning model to classify objects in the cluster.
+
+       Publishes the labeled object list to ROS.
+
+       Calls the pr2_mover routine with the resulting list of detected objects.
+    """
 
     # Convert ROS msg to PCL data
     cloud = ros_to_pcl(pcl_msg)
@@ -58,9 +69,8 @@ def pcl_callback(pcl_msg):
     outlier_filter.set_mean_k(8)
 
     # Any point with a mean distance larger than global
-    # (mean distance+x*std_dev) will be considered outlier
+    # (mean_distance + 0.3 *std_dev) will be considered outlier
     outlier_filter.set_std_dev_mul_thresh(0.3)
-    
     cloud = outlier_filter.filter()
 
     # Voxel Grid filter
@@ -111,13 +121,16 @@ def pcl_callback(pcl_msg):
 
     # Create a cluster extraction object
     ec = white_cloud.make_EuclideanClusterExtraction()
+
     # Set tolerances for distance threshold 
     # as well as minimum and maximum cluster size (in points)
     ec.set_ClusterTolerance(0.02)
     ec.set_MinClusterSize(40)
     ec.set_MaxClusterSize(4000)
+
     # Search the k-d tree for clusters
     ec.set_SearchMethod(tree)
+
     # Extract indices for each of the discovered clusters
     cluster_indices = ec.Extract()
 
@@ -137,6 +150,7 @@ def pcl_callback(pcl_msg):
     #Create new cloud containing all clusters, each with unique color
     cluster_cloud = pcl.PointCloud_PointXYZRGB()
     cluster_cloud.from_list(color_cluster_point_list)
+
     # Convert PCL data to ROS messages
     ros_cloud_objects = pcl_to_ros(cloud_objects)
     ros_cloud_table = pcl_to_ros(cloud_table)
@@ -176,13 +190,13 @@ def pcl_callback(pcl_msg):
         do.cloud = ros_cluster
         detected_objects.append(do)
     
-    # call the mover routine if objects were detected
+    # Handle the resulting list of objects
     if detected_objects:
 
         # Publish the list of detected objects
         detected_objects_pub.publish(detected_objects)
 
-        # call the mover routine
+        # Call the pr2_mover routine
         try:
             pr2_mover(detected_objects)
         except rospy.ROSInterruptException:
@@ -248,7 +262,7 @@ def pr2_mover(detected_objects):
             # mark unsuccessful detection
             detected_object.label = 'error'
 
-    # Evaluate the accuracy
+    # Log the accuracy
     rospy.loginfo('Detected {} objects out of {}.'.format(hit_count, num_objects))
 
     # Create list of detected objects sorted in the order of the pick list
