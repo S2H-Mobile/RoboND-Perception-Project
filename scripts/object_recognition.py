@@ -181,7 +181,6 @@ def pcl_callback(pcl_msg):
     
     # call the mover routine if objects were detected
     if detected_objects:
-        rospy.loginfo('Detected {} objects.'.format(len(detected_objects)))
 
         # Publish the list of detected objects
         detected_objects_pub.publish(detected_objects)
