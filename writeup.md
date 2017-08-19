@@ -53,30 +53,30 @@ Finally I trained a model with 100 poses per object. The histograms have 32 bins
 
 #### 1. For all three tabletop setups (`test*.world`), perform object recognition, then read in respective pick list (`pick_list_*.yaml`). Next construct the messages that would comprise a valid `PickPlace` request output them to `.yaml` format.
 
+##### Results
 In the final configuration, the [perception pipeline](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/object_recognition.py) recognized all objects in all the test scenes. The screenshots below show clippings of the RViz window subscribed to the ``/pcl_objects`` publisher. The objects in the scene are labeled with the predicted label.
-
-##### Results 
+ 
 ###### Scene 1
-See the file output_1.yaml and the screenshot below.
+See the file [output_1.yaml](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/output/output_1.yaml) and the screenshot below.
 
 ![Recognized objects for scene 1.][screenshot_world_1]
 
 ###### Scene 2
-See the file output_2.yaml and the screenshot below.
+See the file [output_2.yaml](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/output/output_2.yaml) and the screenshot below.
 
 ![Recognized objects for scene 2.][screenshot_world_2]
 
 ###### Scene 3
-See the file output_3.yaml and the screenshot below.
+See the file [output_3.yaml](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/output/output_3.yaml) and the screenshot below.
 
 ![Recognized objects for scene 3.][screenshot_world_3]
 
 ##### Improvements
-Since the performance of the perception depends on a number of parameters, the main improvements can be made by tuning those parameters.
+The performance of the pipeline depends on the perception parameters and the machine learning model. So the main improvements can be made in the following three categories.
 
-- The parameters of the image pipeline need to be adjusted to the hardware in use and the application (for example adapt to changing region of interest and object distribution in the scene).
-- The selection and quality of the features used to train the SVM.
-- The machine learning model. Which kernel type fits best to the features, linear or RBF. 
+- Parameter tuning. Adjust perception parameters to the camera hardware in use and the application. For example, adapt to changing region of interest and object distribution in the scene.
+- Feature engineering. Do a grid search to find the parameters that optimize the accuracy score,
+- Selecting the machine learning model. For example, change the Kernel type of the SVM (in this project the linear kernel performs better than RBF). Apply more sophisticated deep learning techniques.
 
 ## Extra Challenges: Complete the Pick & Place
 
