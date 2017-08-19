@@ -76,13 +76,10 @@ def pcl_callback(pcl_msg):
     cloud_filtered = vox.filter()
 
     # PassThrough filter 0.6 < z < 1.1
-    passthrough = cloud_filtered.make_passthrough_filter()
-    filter_axis = 'z'
-    passthrough.set_filter_field_name(filter_axis)
-    axis_min = 0.6
-    axis_max = 1.1
-    passthrough.set_filter_limits(axis_min, axis_max)
-    cloud_filtered = passthrough.filter()
+    pz = cloud_filtered.make_passthrough_filter()
+    pz.set_filter_field_name('z')
+    pz.set_filter_limits(0.6, 1.1)
+    cloud_filtered = pz.filter()
 
     # PassThrough filter 0.34 < x < 1.0
     px = cloud_filtered.make_passthrough_filter()
