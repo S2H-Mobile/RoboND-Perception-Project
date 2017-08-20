@@ -71,7 +71,7 @@ Finally I trained a model with 100 poses per object. The histograms have 32 bins
 
 ![Normalized confusion matrix for training the model.][normalized_confusion_matrix]
 
-The trained model is then used in the ``pcl_callback`` routine to do the inception on the list of clusters from part 2. This means for each cluster in the list the features are calculated and then the classifier predicts the most probable object label. These labels are published to ``/object_markers`` and the detected objects of type ``DetectedObject()`` are published to ``/detected_objects``.
+The trained model is then used in the ``pcl_callback`` routine to infer class labels from the given clusters. This means for each cluster in the list the features are calculated and then the classifier predicts the most probable object label. These labels are published to ``/object_markers`` and the detected objects of type ``DetectedObject()`` are published to ``/detected_objects``.
 
 Then the ``pr2_mover`` routine is called in order to generate a ROS message for each detected object. Within ``pr2_mover``, I first check the accuracy of the prediction. I check if the number of detected objects matches the number of items in the pick list. Then I match the detected labels to the ground truth labels taken from the pick list for the test scene.
 
