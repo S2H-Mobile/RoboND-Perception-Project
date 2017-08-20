@@ -285,8 +285,9 @@ def pr2_mover(detected_objects):
                 detected_objects.remove(detected_object)
                 break
 
-    # Create centroids list 
+    # Create lists for centroids and dropbox groups 
     centroids = []
+    dropbox_groups = []
     for sorted_object in sorted_objects:
 
         # Calculate the centroid
@@ -296,11 +297,8 @@ def pr2_mover(detected_objects):
         # Append centroid as <numpy.float64> data type
         centroids.append(centroid)
 
-    # Create dropbox group list
-    dropbox_groups = []
-    for sorted_object in sorted_objects:
-
-        # Iterate over pick list to find the matching object
+        # Search for the matching dropbox group
+        # Assuming 1:1 correspondence between sorted objects and pick list
         for pl_item in objects:
 
             # Compare objects by their label
