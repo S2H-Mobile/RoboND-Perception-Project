@@ -13,6 +13,7 @@ The challenge is a catkin ROS simulation environment where a PR2 robot must use 
 - The ROS node [object_recognition.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/object_recognition.py) performs the object recognition task and creates ROS messages for the ``pick_place_routine`` service.
 - The script [capture_features.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/capture_features.py) is used to generate feature data used in [train_svm.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/train_svm.py) for training a SVM model.
 - The script [features.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/features.py) defines the features used to characterize the objects in the scene.
+- The files [output_1.yaml](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/output/output_1.yaml), [output_2.yaml](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/output/output_2.yaml) and [output_3.yaml](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/output/output_3.yaml) contain the output messages for each of the scenes.
 
 ## Setup and Usage 
 1. Follow the setup instructions of the [Udacity Perception Exercises](https://github.com/udacity/RoboND-Perception-Exercises) and the [Udacity Perception Project](https://github.com/udacity/RoboND-Perception-Project). After completing these steps you have a catkin workspace containing the packages ``sensor_stick`` and ``pr2_robot``.
