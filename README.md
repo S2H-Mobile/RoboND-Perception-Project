@@ -1,10 +1,18 @@
 # RoboND-Perception-Project
+
+[//]: # (Image References)
+
+[screenshot_world_3]: ./world_3_object_recognition.PNG
+
 This is my solution of the [Perception Project](https://github.com/udacity/RoboND-Perception-Project) for the Udacity Robotics Nanodegree.
 
 The challenge is a catkin ROS simulation environment where a PR2 robot must use its RGBD camera to perceive objects and place them in the appropriate dropbox.
 
-- The file [writeup.md](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/writeup.md) documents the workflow and solution strategy.
-- The ROS node [object_recognition.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/object_recognition.py) performs the object recognition task and creates ROS messages for the ``pick_place_routine`` service.
+## Contents
+- The file [writeup.md](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/writeup.md) documents the solution strategy.
+- The ROS node [object_recognition.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/object_recognition.py) performs the object recognition task and creates ROS messages for the ``pick_place_routine`` service.
+- The script [capture_features.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/capture_features.py) is used to generate feature data used in [train_svm.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/train_svm.py) for training a SVM model.
+- The script [features.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/features.py) defines the features used to characterize the objects in the scene.
 
 ## Setup and Usage 
 1. Follow the setup instructions of the [Udacity Perception Exercises](https://github.com/udacity/RoboND-Perception-Exercises) and the [Udacity Perception Project](https://github.com/udacity/RoboND-Perception-Project). After completing these steps you have a catkin workspace containing the packages ``sensor_stick`` and ``pr2_robot``.
@@ -31,4 +39,4 @@ Test with the actual project scene to see if your recognition code is successful
 - Launch the RViz environment with ``roslaunch pr2_robot pick_place_project.launch``.
 - Run the object recognition script ``rosrun pr2_robot object_recognition.py``. Markers will show up in RViz like so:
 
-![](world_2_object_recognition.png)
+![Recognized objects for scene 3.][screenshot_world_3]
