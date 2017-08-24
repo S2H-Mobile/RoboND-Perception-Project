@@ -23,6 +23,7 @@ def histogram(ch_0, ch_1, ch_2, nbins, bins_range):
     # Normalize the result and return
     return features / np.sum(features)
 
+
 def compute_color_histograms(cloud, using_hsv=True):
 
     # Compute histograms for the clusters
@@ -37,16 +38,11 @@ def compute_color_histograms(cloud, using_hsv=True):
             point_colors_list.append(rgb_list)
 
     # Populate lists with color values
-    channel_1 = []
-    channel_2 = []
-    channel_3 = []
-
-    for color in point_colors_list:
-        channel_1.append(color[0])
-        channel_2.append(color[1])
-        channel_3.append(color[2])
+    ch_0 = [color[0] for color in point_colors_list]
+    ch_1 = [color[1] for color in point_colors_list]
+    ch_2 = [color[2] for color in point_colors_list]
     
-    return histogram(channel_1, channel_2, channel_3, nbins=32, bins_range=(0, 256))
+    return histogram(ch_0, ch_1, ch_2, nbins=32, bins_range=(0, 256))
 
 
 def compute_normal_histograms(normal_cloud):
