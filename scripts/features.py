@@ -46,15 +46,14 @@ def compute_color_histograms(cloud, using_hsv=True):
 
 
 def compute_normal_histograms(normal_cloud):
-    norm_x = []
-    norm_y = []
-    norm_z = []
 
-    for norm_component in pc2.read_points(normal_cloud,
-                                          field_names = ('normal_x', 'normal_y', 'normal_z'),
-                                          skip_nans=True):
-        norm_x.append(norm_component[0])
-        norm_y.append(norm_component[1])
-        norm_z.append(norm_component[2])
+    # Convert point cloud to array
+    fields = ('normal_x', 'normal_y', 'normal_z')
+    normals = pc2.read_points(normal_cloud, field_names=fields, skip_nans=True):
+
+    # Create component arrays for each feature vector
+    norm_x = [vector[0] for vector in normals]
+    norm_y = [vector[1] for vector in normals]
+    norm_z = [vector[2] for vector in normals]
 
     return histogram(norm_x, norm_y, norm_z, nbins=32, bins_range=(-1, 1))
