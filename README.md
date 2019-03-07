@@ -4,12 +4,11 @@
 
 [screenshot_world_3]: ./world_3_object_recognition.PNG
 
-This is my solution of the [Perception Project](https://github.com/udacity/RoboND-Perception-Project) for the Udacity Robotics Nanodegree.
+A simulated PR2 robot uses its RGBD camera to perceive objects. The objects are categorized using a SVM model, and then placed in the appropriate dropbox.
 
-The challenge is a catkin ROS simulation environment where a PR2 robot must use its RGBD camera to perceive objects and place them in the appropriate dropbox.
+This is a solution of the [Perception Project](https://github.com/udacity/RoboND-Perception-Project) for the Udacity Robotics Nanodegree, as documented in the [writeup report](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/writeup.md).
 
 ## Contents
-- The file [writeup.md](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/writeup.md) documents the solution strategy.
 - The ROS node [object_recognition.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/object_recognition.py) performs the object recognition task and creates ROS messages for the ``pick_place_routine`` service.
 - The script [capture_features.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/capture_features.py) is used to generate feature data used in [train_svm.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/train_svm.py) for training a SVM model.
 - The script [features.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/features.py) defines the features used to characterize the objects in the scene.
