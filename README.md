@@ -8,6 +8,8 @@ A simulated PR2 robot uses its RGBD camera to perceive objects. The objects are 
 
 This is a solution of the [Perception Project](https://github.com/udacity/RoboND-Perception-Project) for the Udacity Robotics Nanodegree, as documented in the [writeup report](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/writeup.md).
 
+![Recognized objects for scene 3.][screenshot_world_3]
+
 ## Contents
 - The ROS node [object_recognition.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/object_recognition.py) performs the object recognition task and creates ROS messages for the ``pick_place_routine`` service.
 - The script [capture_features.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/capture_features.py) is used to generate feature data used in [train_svm.py](https://github.com/S2H-Mobile/RoboND-Perception-Project/blob/master/scripts/train_svm.py) for training a SVM model.
@@ -37,6 +39,4 @@ This is a solution of the [Perception Project](https://github.com/udacity/RoboND
 Test with the actual project scene to see if your recognition code is successful.
 - Modify the file ``/pr2_robot/launch/pick_place_project.launch`` to select the test scene.
 - Launch the RViz environment with ``roslaunch pr2_robot pick_place_project.launch``.
-- Run the object recognition script ``rosrun pr2_robot object_recognition.py``. Markers will show up in RViz like so:
-
-![Recognized objects for scene 3.][screenshot_world_3]
+- Run the object recognition script ``rosrun pr2_robot object_recognition.py``. Markers will show up in RViz, see screenshot above.
